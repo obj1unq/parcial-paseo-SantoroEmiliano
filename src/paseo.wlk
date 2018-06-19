@@ -1,17 +1,30 @@
+//Nota 9(nueve): En general muy bien, más allá de algunos detalles. Muy buenos tests.
+
+//1) MB-. Detalles menores
+//2) MB
+//3) MB- Al igual que el punto uno tiene detalles producto de la forma de armar la herencia de prendas.
+//4) B Problemas al usar un atributo directamente donde las subclases necesitan redefinir comportamiento.
+//5) MB
+//6) MB
+//7) B (delegar mejor el conocimiento de cuando un niño es pequeño)
+//8) R+: La herencia de prendas y las variantes de usar con y sin parámetros no son consistentes.
+
 
 class Prenda {
 	var property talle = null
-	var property desgaste = 0
+	var property desgaste = 0 // Este atributo está mal ubicado, porque no sirve para todas las subclases.
 	var property abrigo = 1
 	
 	
 	method comodidad(unNinio) = self.talleAdecuado(unNinio) -  self.comodidadDesgaste()
-	
+
+	// Por qué no es comodidadPorTalleAdecuado?	
 	method talleAdecuado(ninio) = if ( talle == ninio.talle() ) {8} else {0}
 	
 	method comodidadDesgaste() = if (desgaste>3) {3} else { self.desgaste() }
 	
-	method calidad(unNinio) = self.comodidad(unNinio) + abrigo
+	// MAL, usa un atributo "abrigo", debería ser un mensaje para que subclases puedan redefinir
+	method calidad(unNinio) = self.comodidad(unNinio) + abrigo 
 	
 	method usar(uso){
 		desgaste += uso
@@ -30,6 +43,7 @@ class PrendaPar inherits Prenda {
 	method comodidadChiquito(unNinio) = if (unNinio.edad() < 4) {1} else {0}
 	
 	method intercambiar(otroPar){ if (self.puedeIntercambiar(otroPar)) {self.intercambio(otroPar)}
+		// Si no realiza la acción pedida, terminar con excepción.
 		
 	}
 	
@@ -66,7 +80,7 @@ class PrendaLiviana inherits Prenda{
 
 class PrendaPesada inherits Prenda{
 	method usar() {
-		desgaste += 1
+		desgaste += 1 // Repite código
 	}
 	
 }
@@ -78,7 +92,7 @@ class Familia {
 	
 	method infaltables() = ninios.map({ninio => ninio.mejorPrenda()}).asSet()
 	
-	method chiquitos() = ninios.filter({ninio => ninio.edad() < 4})
+	method chiquitos() = ninios.filter({ninio => ninio.edad() < 4}) // Se pide que no repitas esta condición!
 	
 	method pasear() {
 		if (self.aptaSalir()){
@@ -92,7 +106,7 @@ class Ninio {
 	var prendas = []
 	var property talle = null
 	
-	
+	// Nombres poco descriptivos: cantidadPrendas, calidadPrendas
 	method estaListo() = self.cantidadPrendas() and self.tienePrendaAbrigada() and self.calidadPrendas()
 	
 	method cantidadPrendas() = prendas.size() >= 5
@@ -116,7 +130,8 @@ class NinioProblematico inherits Ninio {
 	override method cantidadPrendas() = prendas.size() >= 4
 	
 	override method estaListo() = super() and self.jugueteAcorde()
-	
+
+	// Sería mejor delegar en juguete.	
 	method jugueteAcorde() = (edad < juguete.edadMaxima()) and (edad > juguete.edadMinima())
 }
 
